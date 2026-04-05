@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Intelligent Story Generator for Kids - Create magical stories with AI">
+    <title>✨ Story Magic - Intelligent Story Generator for Kids</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-stars" id="bgStars"></div>
+    <div class="floating-clouds">
+        <div class="cloud cloud-1">☁️</div>
+        <div class="cloud cloud-2">☁️</div>
+        <div class="cloud cloud-3">⭐</div>
+        <div class="cloud cloud-4">🌙</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">✨ Story Magic ✨</h1>
+            <p class="tagline" id="tagline">Create magical stories for kids!</p>
+            <div class="lang-toggle">
+                <button class="lang-btn active" id="btnEn" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn" id="btnHi" onclick="switchLanguage('hi')">हिन्दी</button>
+                <button class="lang-btn" id="btnHinglish" onclick="switchLanguage('hinglish')">Hinglish</button>
+                <button class="lang-btn" id="btnBn" onclick="switchLanguage('bn')">বাংলা</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Input Section -->
+        <section class="card input-card" id="inputSection">
+            <h2 class="section-title" id="inputTitle">📝 Create Your Story</h2>
+
+            <!-- Tabs -->
+            <div class="tab-bar">
+                <button class="tab active" id="tabText" onclick="switchTab('text')">
+                    <span>✍️</span> <span id="tabTextLabel">Text Story</span>
+                </button>
+                <button class="tab" id="tabImage" onclick="switchTab('image')">
+                    <span>🖼️</span> <span id="tabImageLabel">Image Story</span>
+                </button>
+            </div>
+
+            <!-- Text Input Form -->
+            <form id="textForm" class="story-form" onsubmit="generateStory(event)">
+                <!-- Age Group Selection -->
+                <div class="age-group-section">
+                    <label id="ageLabel">👶 Age Group</label>
+                    <div class="age-group-grid" id="ageGroupGrid">
+                        <div class="age-card" data-age="3-5" onclick="selectAgeGroup('3-5', this)">
+                            <span class="age-emoji">🧒</span>
+                            <span class="age-range">3–5</span>
+                            <span class="age-label" id="ageLabel1">Toddler</span>
+                        </div>
+                        <div class="age-card selected" data-age="6-8" onclick="selectAgeGroup('6-8', this)">
+                            <span class="age-emoji">👦</span>
+                            <span class="age-range">6–8</span>
+                            <span class="age-label" id="ageLabel2">Explorer</span>
+                        </div>
+                        <div class="age-card" data-age="9-12" onclick="selectAgeGroup('9-12', this)">
+                            <span class="age-emoji">🧑</span>
+                            <span class="age-range">9–12</span>
+                            <span class="age-label" id="ageLabel3">Adventurer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="charLabel" for="characterName">👤 Character Name</label>
+                    <input type="text" id="characterName" placeholder="Enter hero's name..." maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label id="themeLabel">🎭 Choose a Theme</label>
+                    <div class="theme-grid" id="themeGrid"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-generate" id="btnGenerate">
+                    <span class="btn-icon">🪄</span>
+                    <span id="btnGenerateText">Generate Story!</span>
+                </button>
+            </form>
+
+            <!-- Image Input Form -->
+            <form id="imageForm" class="story-form hidden" onsubmit="generateImageStory(event)">
+                <!-- Age Group for Image too -->
+                <div class="age-group-section">
+                    <label id="imgAgeLabel">👶 Age Group</label>
+                    <div class="age-group-grid" id="imgAgeGroupGrid">
+                        <div class="age-card" data-age="3-5" onclick="selectAgeGroup('3-5', this)">
+                            <span class="age-emoji">🧒</span>
+                            <span class="age-range">3–5</span>
+                            <span class="age-label">Toddler</span>
+                        </div>
+                        <div class="age-card selected" data-age="6-8" onclick="selectAgeGroup('6-8', this)">
+                            <span class="age-emoji">👦</span>
+                            <span class="age-range">6–8</span>
+                            <span class="age-label">Explorer</span>
+                        </div>
+                        <div class="age-card" data-age="9-12" onclick="selectAgeGroup('9-12', this)">
+                            <span class="age-emoji">🧑</span>
+                            <span class="age-range">9–12</span>
+                            <span class="age-label">Adventurer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="imgCharLabel" for="imgCharacterName">👤 Character Name (optional)</label>
+                    <input type="text" id="imgCharacterName" placeholder="Enter hero's name..." maxlength="50">
+                </div>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imageUpload').click()">
+                    <div class="upload-icon" id="uploadIcon">📸</div>
+                    <p class="upload-text" id="uploadText">Click or drag an image here</p>
+                    <input type="file" id="imageUpload" accept="image/*" hidden onchange="handleImageUpload(event)">
+                    <img id="imagePreview" class="image-preview hidden" alt="Preview">
+                </div>
+                <button type="submit" class="btn btn-primary btn-generate" id="btnImageGenerate">
+                    <span class="btn-icon">🪄</span>
+                    <span id="btnImageText">Generate from Image!</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Loading -->
+        <div class="loading hidden" id="loading">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingText">Creating your magical story...</p>
+        </div>
+
+        <!-- Story Display Section -->
+        <section class="card story-card hidden" id="storySection">
+            <div class="story-header">
+                <h2 class="story-title" id="storyTitle"></h2>
+                <div class="story-controls">
+                    <button class="btn btn-icon-only" onclick="toggleNarration()" title="Listen" id="btnNarrate">🔊</button>
+                    <button class="btn btn-icon-only" onclick="openSlideshow()" title="Slideshow" id="btnSlideshow">🎬</button>
+                    <button class="btn btn-icon-only" onclick="createNewStory()" title="New Story" id="btnNew">🔄</button>
+                </div>
+            </div>
+            <div class="story-content" id="storyContent"></div>
+
+            <!-- Narration Controls -->
+            <div class="narration-controls hidden" id="narrationControls">
+                <button class="btn-ctrl" id="btnPause" onclick="pauseNarration()">⏸ Pause</button>
+                <button class="btn-ctrl" id="btnResume" onclick="resumeNarration()">▶ Resume</button>
+                <button class="btn-ctrl" id="btnStop" onclick="stopNarration()">⏹ Stop</button>
+                <select class="speed-inline" id="speedSelect" onchange="updateSpeed()">
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                </select>
+                <span class="narration-status" id="narrationStatus">▶ Playing</span>
+            </div>
+
+            <!-- Interactive Choices -->
+            <div class="choices-section" id="choicesSection">
+                <h3 class="choices-title" id="choicesTitle">What should happen next?</h3>
+                <div class="choices-grid" id="choicesGrid"></div>
+            </div>
+
+            <!-- Story Complete -->
+            <div class="story-complete hidden" id="storyComplete">
+                <div class="complete-badge">🏆</div>
+                <p class="complete-text" id="completeText">The End! What a wonderful story!</p>
+                <button class="btn btn-primary" onclick="createNewStory()" id="btnNewStory">
+                    ✨ <span id="btnNewStoryText">Create Another Story</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Slideshow Modal -->
+    <div class="slideshow-modal hidden" id="slideshowModal">
+        <div class="slideshow-container">
+            <button class="slideshow-close" onclick="closeSlideshow()">✕</button>
+            <div class="slideshow-screen" id="slideshowScreen">
+                <div class="scene-emoji" id="sceneEmoji"></div>
+                <p class="scene-text" id="sceneText"></p>
+                <div class="scene-counter" id="sceneCounter"></div>
+            </div>
+            <div class="slideshow-controls">
+                <button class="btn btn-slide" onclick="prevScene()">⬅️</button>
+                <button class="btn btn-slide" id="btnPlayPause" onclick="toggleAutoPlay()">⏸️</button>
+                <button class="btn btn-slide" onclick="nextScene()">➡️</button>
+                <button class="btn btn-slide" onclick="toggleSceneNarration()" id="btnSceneNarrate">🔊</button>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with ❤️ for young storytellers | <span id="footerText">Intelligent Story Generator</span></p>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
